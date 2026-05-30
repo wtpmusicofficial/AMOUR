@@ -2,6 +2,8 @@ const WEBHOOK_URL = 'https://hook.us2.make.com/nrzkol1mdlabyvtzprotqgvbom56p8f4'
 const TOTAL_STEPS = 5;
 
 const form = document.getElementById('signupForm');
+const page = document.querySelector('.page');
+const header = document.querySelector('.header');
 const steps = document.querySelectorAll('.step');
 const progressFill = document.getElementById('progressFill');
 const stepIndicator = document.getElementById('stepIndicator');
@@ -228,6 +230,8 @@ form.addEventListener('submit', async (e) => {
     form.hidden = true;
     document.querySelector('.progress-bar').hidden = true;
     stepIndicator.hidden = true;
+    header.hidden = true;
+    page.classList.add('page--success');
     successScreen.hidden = false;
   } catch {
     phoneHint.textContent = 'Something went wrong. Please try again.';

@@ -331,6 +331,15 @@ form {
 }
 
 /* Success screen */
+.page--success {
+  justify-content: center;
+}
+
+.page--success .form-container {
+  flex: 0;
+  justify-content: center;
+}
+
 .success-screen {
   text-align: center;
   padding: 2rem 0;
@@ -357,12 +366,6 @@ form {
   font-family: 'Fredoka', sans-serif;
   font-size: 1.75rem;
   color: var(--ink);
-  margin-bottom: 0.5rem;
-}
-
-.success-screen p {
-  color: var(--ink-muted);
-  font-size: 1.05rem;
 }
 
 @media (max-width: 400px) {
