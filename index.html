@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMOUR — Event Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <img src="assets/logo.png" alt="AMOUR" class="logo">
+      <p class="tagline">Sign up to get invited to the next event</p>
+    </header>
+
+    <main class="form-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="step-indicator" id="stepIndicator">Step 1 of 5</p>
+
+      <form id="signupForm" novalidate>
+        <!-- Step 1 -->
+        <fieldset class="step active" data-step="1">
+          <legend>Do you live in Raleigh, NC?</legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="raleigh" value="Yes" required>
+              <span>Yes</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="raleigh" value="No">
+              <span>No</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Step 2 -->
+        <fieldset class="step" data-step="2">
+          <legend>How old are you?</legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="age" value="Under 18" required>
+              <span>Under 18</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="age" value="18-21">
+              <span>18-21</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="age" value="21+">
+              <span>21+</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Step 3 -->
+        <fieldset class="step" data-step="3">
+          <legend>What gender do you identify as?</legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="gender" value="Male" required>
+              <span>Male</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="gender" value="Female">
+              <span>Female</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="gender" value="Other">
+              <span>Other</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Step 4 -->
+        <fieldset class="step" data-step="4">
+          <legend>What genres are you most into?</legend>
+          <div class="options options-grid">
+            <label class="option">
+              <input type="checkbox" name="genres" value="EDM/Dance">
+              <span>EDM/Dance</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="genres" value="Pop">
+              <span>Pop</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="genres" value="Country">
+              <span>Country</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="genres" value="Indie">
+              <span>Indie</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="genres" value="Rock">
+              <span>Rock</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="genres" value="Other">
+              <span>Other</span>
+            </label>
+          </div>
+          <p class="field-hint" id="genreHint"></p>
+        </fieldset>
+
+        <!-- Step 5 -->
+        <fieldset class="step" data-step="5">
+          <legend>Full name and phone number</legend>
+          <div class="text-fields">
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Jane Doe" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" name="phone" placeholder="(919) 555-0123" autocomplete="tel" required>
+              <p class="field-hint" id="phoneHint"></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-back" id="backBtn" hidden>Back</button>
+          <button type="button" class="btn btn-next" id="nextBtn">Next</button>
+          <button type="submit" class="btn btn-submit" id="submitBtn" hidden>Submit</button>
+        </div>
+      </form>
+
+      <div class="success-screen" id="successScreen" hidden>
+        <div class="success-icon">✓</div>
+        <h2>You're on the list!</h2>
+        <p>We'll reach out when the next event drops.</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
