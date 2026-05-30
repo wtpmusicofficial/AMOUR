@@ -104,11 +104,25 @@ form {
   flex-direction: column;
 }
 
+.step legend {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+  line-height: 1.25;
+  display: block;
+  width: 100%;
+  float: none;
+  padding: 0;
+}
+
 .step {
   border: none;
   flex: 1;
   display: none;
   animation: fadeIn 0.3s ease;
+  min-width: 0;
 }
 
 .step.active {
@@ -124,17 +138,6 @@ form {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.step legend {
-  font-family: 'Fredoka', sans-serif;
-  font-weight: 600;
-  font-size: clamp(1.25rem, 4vw, 1.6rem);
-  color: var(--ink);
-  margin-bottom: 1.25rem;
-  line-height: 1.25;
-  float: left;
-  width: 100%;
 }
 
 /* Options */
@@ -198,6 +201,13 @@ form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
+  clear: both;
+}
+
+.field {
+  width: 100%;
+  min-width: 0;
 }
 
 .field label {
@@ -210,7 +220,10 @@ form {
 }
 
 .field input {
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   padding: 0.9rem 1.1rem;
   font-family: 'DM Sans', sans-serif;
   font-size: 1.05rem;
