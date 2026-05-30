@@ -15,6 +15,8 @@ const genreHint = document.getElementById('genreHint');
 
 let currentStep = 1;
 
+const AUTO_ADVANCE_DELAY = 350;
+
 function updateUI() {
   steps.forEach((step) => {
     step.classList.toggle('active', Number(step.dataset.step) === currentStep);
@@ -179,10 +181,23 @@ function collectFormData() {
   };
 }
 
-nextBtn.addEventListener('click', () => {
+function advanceStep() {
   if (!validateStep(currentStep)) return;
-  currentStep++;
-  updateUI();
+  if (currentStep < TOTAL_STEPS) {
+    currentStep++;
+    updateUI();
+  }
+}
+
+nextBtn.addEventListener('click', advanceStep);
+
+form.querySelectorAll('input[type="radio"]').forEach((input) => {
+  input.addEventListener('change', () => {
+    const step = Number(input.closest('.step')?.dataset.step);
+    if (step === currentStep) {
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+    }
+  });
 });
 
 backBtn.addEventListener('click', () => {
