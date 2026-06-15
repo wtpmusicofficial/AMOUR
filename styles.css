@@ -461,6 +461,10 @@ form {
   animation: fadeIn 0.2s ease;
 }
 
+.modal-overlay[hidden] {
+  display: none !important;
+}
+
 .modal {
   width: min(100%, 420px);
   padding: 1.5rem;

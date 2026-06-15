@@ -6,7 +6,7 @@ const EVENT_CONFIG = {
   title: 'RUN & RAVE - WEST HOLLYWOOD',
   location: 'The Artist Tree, 8625 Santa Monica Blvd, West Hollywood, CA 90069',
   date: '20260628',
-  startTime: '113000',
+  startTime: '120000',
   endTime: '143000',
   timezone: 'America/Los_Angeles',
 };
@@ -519,4 +519,5 @@ async function shareSignupLink() {
 calendarBtn.addEventListener('click', downloadCalendarEvent);
 shareBtn.addEventListener('click', shareSignupLink);
 
+hideModal();
 updateUI();
