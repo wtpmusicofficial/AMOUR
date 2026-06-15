@@ -1,5 +1,18 @@
-const WEBHOOK_URL = 'https://hook.us2.make.com/nrzkol1mdlabyvtzprotqgvbom56p8f4';
-const TOTAL_STEPS = 5;
+const SUBMIT_URL = '/api/signup';
+const TOTAL_STEPS = 8;
+const AUTO_ADVANCE_DELAY = 350;
+
+const EVENT_CONFIG = {
+  title: 'RUN & RAVE - WEST HOLLYWOOD',
+  location: 'The Artist Tree, 8625 Santa Monica Blvd, West Hollywood, CA 90069',
+  date: '20260628',
+  startTime: '113000',
+  endTime: '143000',
+  timezone: 'America/Los_Angeles',
+};
+
+const SHARE_MESSAGE =
+  "I just signed up for the AMOUR event — a run that ends in a daytime rave! Sign up here:";
 
 const form = document.getElementById('signupForm');
 const page = document.querySelector('.page');
@@ -13,11 +26,18 @@ const submitBtn = document.getElementById('submitBtn');
 const successScreen = document.getElementById('successScreen');
 const phoneInput = document.getElementById('phone');
 const phoneHint = document.getElementById('phoneHint');
-const genreHint = document.getElementById('genreHint');
+const nameHint = document.getElementById('nameHint');
+const interestsHint = document.getElementById('interestsHint');
+const instagramInput = document.getElementById('instagram');
+const instagramHint = document.getElementById('instagramHint');
+const stepModal = document.getElementById('stepModal');
+const modalMessage = document.getElementById('modalMessage');
+const modalContinue = document.getElementById('modalContinue');
+const calendarBtn = document.getElementById('calendarBtn');
+const shareBtn = document.getElementById('shareBtn');
 
 let currentStep = 1;
-
-const AUTO_ADVANCE_DELAY = 350;
+let pendingModalStep = null;
 
 function updateUI() {
   steps.forEach((step) => {
@@ -26,6 +46,54 @@ function updateUI() {
 
   progressFill.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
   stepIndicator.textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+
+  syncStepBranching(currentStep);
+}
+
+function syncStepBranching(step) {
+  const location = getSelectedRadio('location')?.value;
+  const age = getSelectedRadio('age')?.value;
+
+  const step1Notice = document.getElementById('step1Notice');
+  const step2Notice = document.getElementById('step2Notice');
+
+  if (step === 1) {
+    const showLocationWarning = location === 'No';
+    step1Notice.hidden = !showLocationWarning;
+    backBtn.hidden = currentStep === 1;
+    nextBtn.hidden = showLocationWarning || currentStep === TOTAL_STEPS;
+    submitBtn.hidden = currentStep !== TOTAL_STEPS;
+    return;
+  }
+
+  step1Notice.hidden = true;
+
+  if (step === 2) {
+    const blocked = age === 'Under 21';
+    step2Notice.hidden = !blocked;
+    backBtn.hidden = false;
+    nextBtn.hidden = blocked || currentStep === TOTAL_STEPS;
+    submitBtn.hidden = currentStep !== TOTAL_STEPS;
+    return;
+  }
+
+  step2Notice.hidden = true;
+
+  if (step === 4) {
+    const houseMusic = getSelectedRadio('houseMusic')?.value;
+    backBtn.hidden = false;
+    nextBtn.hidden = houseMusic === 'No' || currentStep === TOTAL_STEPS;
+    submitBtn.hidden = currentStep !== TOTAL_STEPS;
+    return;
+  }
+
+  if (step === 5) {
+    const dancing = getSelectedRadio('dancing')?.value;
+    backBtn.hidden = false;
+    nextBtn.hidden = dancing === 'No' || currentStep === TOTAL_STEPS;
+    submitBtn.hidden = currentStep !== TOTAL_STEPS;
+    return;
+  }
 
   backBtn.hidden = currentStep === 1;
   nextBtn.hidden = currentStep === TOTAL_STEPS;
@@ -39,7 +107,7 @@ function getSelectedRadio(name) {
 function validateStep(step) {
   switch (step) {
     case 1:
-      if (!getSelectedRadio('raleigh')) {
+      if (!getSelectedRadio('location')) {
         shakeOptions(step);
         return false;
       }
@@ -48,6 +116,9 @@ function validateStep(step) {
     case 2:
       if (!getSelectedRadio('age')) {
         shakeOptions(step);
+        return false;
+      }
+      if (getSelectedRadio('age').value === 'Under 21') {
         return false;
       }
       return true;
@@ -59,25 +130,63 @@ function validateStep(step) {
       }
       return true;
 
-    case 4: {
-      const checked = form.querySelectorAll('input[name="genres"]:checked');
-      if (checked.length === 0) {
-        genreHint.textContent = 'Pick at least one genre';
+    case 4:
+      if (!getSelectedRadio('houseMusic')) {
+        shakeOptions(step);
         return false;
       }
-      genreHint.textContent = '';
+      return true;
+
+    case 5:
+      if (!getSelectedRadio('dancing')) {
+        shakeOptions(step);
+        return false;
+      }
+      return true;
+
+    case 6: {
+      const checked = form.querySelectorAll('input[name="interests"]:checked');
+      if (checked.length === 0) {
+        interestsHint.textContent = 'Pick at least one';
+        return false;
+      }
+      interestsHint.textContent = '';
       return true;
     }
 
-    case 5: {
-      const nameInput = document.getElementById('fullName');
-      const name = nameInput.value.trim();
-      if (!name || name.split(/\s+/).length < 2) {
-        nameInput.classList.add('invalid');
-        phoneHint.textContent = name ? 'Please enter your full name (first & last)' : 'Name is required';
+    case 7: {
+      const handle = normalizeInstagram(instagramInput.value);
+      if (!handle) {
+        instagramInput.classList.add('invalid');
+        instagramHint.textContent = 'Instagram handle is required';
         return false;
       }
-      nameInput.classList.remove('invalid');
+      instagramInput.classList.remove('invalid');
+      instagramHint.textContent = '';
+      return true;
+    }
+
+    case 8: {
+      const firstNameInput = document.getElementById('firstName');
+      const lastNameInput = document.getElementById('lastName');
+      const firstName = firstNameInput.value.trim();
+      const lastName = lastNameInput.value.trim();
+
+      firstNameInput.classList.remove('invalid');
+      lastNameInput.classList.remove('invalid');
+      nameHint.textContent = '';
+
+      if (!firstName) {
+        firstNameInput.classList.add('invalid');
+        nameHint.textContent = 'First name is required';
+        return false;
+      }
+
+      if (!lastName) {
+        lastNameInput.classList.add('invalid');
+        nameHint.textContent = 'Last name is required';
+        return false;
+      }
 
       const phoneResult = validatePhone(phoneInput.value);
       if (!phoneResult.valid) {
@@ -102,6 +211,10 @@ function shakeOptions(step) {
     fieldset.offsetHeight;
     fieldset.style.animation = 'shake 0.35s ease';
   }
+}
+
+function normalizeInstagram(raw) {
+  return raw.trim().replace(/^@+/, '');
 }
 
 function validatePhone(raw) {
@@ -158,28 +271,46 @@ function formatPhoneDisplay(value) {
 }
 
 phoneInput.addEventListener('input', () => {
-  const cursor = phoneInput.selectionStart;
-  const before = phoneInput.value;
-  phoneInput.value = formatPhoneDisplay(before);
+  phoneInput.value = formatPhoneDisplay(phoneInput.value);
   phoneInput.classList.remove('invalid');
   phoneHint.textContent = '';
 });
 
+document.getElementById('firstName').addEventListener('input', () => {
+  document.getElementById('firstName').classList.remove('invalid');
+  nameHint.textContent = '';
+});
+
+document.getElementById('lastName').addEventListener('input', () => {
+  document.getElementById('lastName').classList.remove('invalid');
+  nameHint.textContent = '';
+});
+
+instagramInput.addEventListener('input', () => {
+  instagramInput.classList.remove('invalid');
+  instagramHint.textContent = '';
+});
+
 function collectFormData() {
-  const genres = [...form.querySelectorAll('input[name="genres"]:checked')].map(
+  const interests = [...form.querySelectorAll('input[name="interests"]:checked')].map(
     (el) => el.value
   );
   const phoneResult = validatePhone(phoneInput.value);
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
 
   return {
-    raleigh: getSelectedRadio('raleigh').value,
+    location: getSelectedRadio('location').value,
     age: getSelectedRadio('age').value,
     gender: getSelectedRadio('gender').value,
-    genres: genres.join(', '),
-    fullName: document.getElementById('fullName').value.trim(),
+    houseMusic: getSelectedRadio('houseMusic').value,
+    dancing: getSelectedRadio('dancing').value,
+    interests: interests.join(', '),
+    instagram: normalizeInstagram(instagramInput.value),
+    firstName,
+    lastName,
+    fullName: `${firstName} ${lastName}`,
     phone: phoneResult.formatted,
-    phoneDigits: phoneResult.digits,
-    submittedAt: new Date().toISOString(),
   };
 }
 
@@ -191,18 +322,99 @@ function advanceStep() {
   }
 }
 
+function showModal(message, fromStep) {
+  pendingModalStep = fromStep;
+  modalMessage.textContent = message;
+  stepModal.hidden = false;
+}
+
+function hideModal() {
+  stepModal.hidden = true;
+  pendingModalStep = null;
+}
+
+function handleRadioBranch(step, value) {
+  switch (step) {
+    case 1:
+      if (value === 'No') {
+        updateUI();
+        return;
+      }
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      break;
+
+    case 2:
+      if (value === 'Under 21') {
+        updateUI();
+        return;
+      }
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      break;
+
+    case 3:
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      break;
+
+    case 4:
+      if (value === 'No') {
+        showModal(
+          "It's a rave so that's what we'll be playing! Are you sure you want to continue?",
+          4
+        );
+        updateUI();
+        return;
+      }
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      break;
+
+    case 5:
+      if (value === 'No') {
+        showModal(
+          "Fair warning: the run ends in a daytime rave. If dancing isn't your thing, this might not be your event!\n\nCapacity is limited, so are you sure you'd like to take a spot?",
+          5
+        );
+        updateUI();
+        return;
+      }
+      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      break;
+
+    default:
+      break;
+  }
+}
+
 nextBtn.addEventListener('click', advanceStep);
 
 form.querySelectorAll('input[type="radio"]').forEach((input) => {
   input.addEventListener('change', () => {
     const step = Number(input.closest('.step')?.dataset.step);
     if (step === currentStep) {
-      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
+      handleRadioBranch(step, input.value);
     }
   });
 });
 
+document.querySelectorAll('.step-continue').forEach((btn) => {
+  btn.addEventListener('click', advanceStep);
+});
+
+modalContinue.addEventListener('click', () => {
+  const fromStep = pendingModalStep;
+  hideModal();
+  if (fromStep === currentStep) {
+    advanceStep();
+  }
+});
+
+stepModal.addEventListener('click', (e) => {
+  if (e.target === stepModal) {
+    hideModal();
+  }
+});
+
 backBtn.addEventListener('click', () => {
+  hideModal();
   currentStep--;
   updateUI();
 });
@@ -217,7 +429,7 @@ form.addEventListener('submit', async (e) => {
   const data = collectFormData();
 
   try {
-    const response = await fetch(WEBHOOK_URL, {
+    const response = await fetch(SUBMIT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -239,5 +451,72 @@ form.addEventListener('submit', async (e) => {
     submitBtn.textContent = 'Submit';
   }
 });
+
+function buildCalendarIcs() {
+  const { title, location, date, startTime, endTime, timezone } = EVENT_CONFIG;
+  const uid = `${date}-${startTime}@amour`;
+
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//AMOUR//Event Sign Up//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${formatIcsTimestamp(new Date())}`,
+    `DTSTART;TZID=${timezone}:${date}T${startTime}`,
+    `DTEND;TZID=${timezone}:${date}T${endTime}`,
+    `SUMMARY:${title}`,
+    `LOCATION:${location}`,
+    'DESCRIPTION:RUN & RAVE — West Hollywood. Details coming via text.',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+
+  return lines.join('\r\n');
+}
+
+function formatIcsTimestamp(date) {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+}
+
+function downloadCalendarEvent() {
+  const ics = buildCalendarIcs();
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'amour-event.ics';
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function shareSignupLink() {
+  const url = window.location.href.split('#')[0];
+  const text = `${SHARE_MESSAGE} ${url}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'AMOUR Event', text: SHARE_MESSAGE, url });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    shareBtn.textContent = 'Link copied!';
+    setTimeout(() => {
+      shareBtn.textContent = 'Share with friends';
+    }, 2000);
+  } catch {
+    window.prompt('Copy this message and send it to your friends:', text);
+  }
+}
+
+calendarBtn.addEventListener('click', downloadCalendarEvent);
+shareBtn.addEventListener('click', shareSignupLink);
 
 updateUI();

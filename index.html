@@ -20,21 +20,25 @@
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
-      <p class="step-indicator" id="stepIndicator">Step 1 of 5</p>
+      <p class="step-indicator" id="stepIndicator">Step 1 of 8</p>
 
       <form id="signupForm" novalidate>
         <!-- Step 1 -->
         <fieldset class="step active" data-step="1">
-          <legend>Do you live in Raleigh, NC?</legend>
+          <legend>Do you live in or around West Hollywood, CA?</legend>
           <div class="options">
             <label class="option">
-              <input type="radio" name="raleigh" value="Yes" required>
+              <input type="radio" name="location" value="Yes" required>
               <span>Yes</span>
             </label>
             <label class="option">
-              <input type="radio" name="raleigh" value="No">
+              <input type="radio" name="location" value="No">
               <span>No</span>
             </label>
+          </div>
+          <div class="step-notice" id="step1Notice" hidden>
+            <p>Capacity is limited so please only continue if you can make it to the event!</p>
+            <button type="button" class="btn btn-next step-continue">Continue</button>
           </div>
         </fieldset>
 
@@ -43,17 +47,16 @@
           <legend>How old are you?</legend>
           <div class="options">
             <label class="option">
-              <input type="radio" name="age" value="Under 18" required>
-              <span>Under 18</span>
-            </label>
-            <label class="option">
-              <input type="radio" name="age" value="18-21">
-              <span>18-21</span>
+              <input type="radio" name="age" value="Under 21" required>
+              <span>Under 21</span>
             </label>
             <label class="option">
               <input type="radio" name="age" value="21+">
               <span>21+</span>
             </label>
+          </div>
+          <div class="step-notice step-notice--block" id="step2Notice" hidden>
+            <p>Sorry but this event is 21+ only! Since it's a cannabis lounge, IDs will be checked at the door</p>
           </div>
         </fieldset>
 
@@ -78,47 +81,86 @@
 
         <!-- Step 4 -->
         <fieldset class="step" data-step="4">
-          <legend>What genres are you most into?</legend>
-          <div class="options options-grid">
+          <legend>Do you like house music and/or EDM (electronic dance music)?</legend>
+          <div class="options">
             <label class="option">
-              <input type="checkbox" name="genres" value="EDM/Dance">
-              <span>EDM/Dance</span>
+              <input type="radio" name="houseMusic" value="Yes" required>
+              <span>Yes</span>
             </label>
             <label class="option">
-              <input type="checkbox" name="genres" value="Pop">
-              <span>Pop</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" name="genres" value="Country">
-              <span>Country</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" name="genres" value="Indie">
-              <span>Indie</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" name="genres" value="Rock">
-              <span>Rock</span>
-            </label>
-            <label class="option">
-              <input type="checkbox" name="genres" value="Other">
-              <span>Other</span>
+              <input type="radio" name="houseMusic" value="No">
+              <span>No</span>
             </label>
           </div>
-          <p class="field-hint" id="genreHint"></p>
         </fieldset>
 
         <!-- Step 5 -->
         <fieldset class="step" data-step="5">
-          <legend>Full name and phone number</legend>
+          <legend>Do you like to dance?</legend>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="dancing" value="Yes" required>
+              <span>Yes</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="dancing" value="No">
+              <span>No</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Step 6 -->
+        <fieldset class="step" data-step="6">
+          <legend>What are you most interested in?</legend>
+          <div class="options options-grid">
+            <label class="option">
+              <input type="checkbox" name="interests" value="Running">
+              <span>Running</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="interests" value="Raving">
+              <span>Raving</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="interests" value="Meeting new people">
+              <span>Meeting new people</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="interests" value="Cannabis">
+              <span>Cannabis</span>
+            </label>
+          </div>
+          <p class="field-hint" id="interestsHint"></p>
+        </fieldset>
+
+        <!-- Step 7 -->
+        <fieldset class="step" data-step="7">
+          <legend>What is your instagram handle?</legend>
           <div class="text-fields">
             <div class="field">
-              <label for="fullName">Full name</label>
-              <input type="text" id="fullName" name="fullName" placeholder="Jane Doe" autocomplete="name" required>
+              <label for="instagram">Instagram handle</label>
+              <input type="text" id="instagram" name="instagram" placeholder="@yourhandle" autocomplete="username" required>
+              <p class="field-hint" id="instagramHint"></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Step 8 -->
+        <fieldset class="step" data-step="8">
+          <legend>Name and phone number</legend>
+          <div class="text-fields">
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="firstName" placeholder="Jane" autocomplete="given-name" required>
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Doe" autocomplete="family-name" required>
+              <p class="field-hint" id="nameHint"></p>
             </div>
             <div class="field">
               <label for="phone">Phone number</label>
-              <input type="tel" id="phone" name="phone" placeholder="(919) 555-0123" autocomplete="tel" required>
+              <input type="tel" id="phone" name="phone" placeholder="(323) 555-0123" autocomplete="tel" required>
               <p class="field-hint" id="phoneHint"></p>
             </div>
           </div>
@@ -134,8 +176,29 @@
       <div class="success-screen" id="successScreen" hidden>
         <div class="success-icon">✓</div>
         <h2>You're on the list!</h2>
+        <p class="success-subtitle">Now what?</p>
+        <ol class="success-steps">
+          <li class="success-step">
+            <span class="success-step-label">Save to calendar</span>
+            <button type="button" class="btn btn-action" id="calendarBtn">Save to calendar</button>
+          </li>
+          <li class="success-step">
+            <span class="success-step-label">Share with your friends</span>
+            <button type="button" class="btn btn-action" id="shareBtn">Share with friends</button>
+          </li>
+          <li class="success-step">
+            <span class="success-step-label">Wait for a text from us with all the details</span>
+          </li>
+        </ol>
       </div>
     </main>
+  </div>
+
+  <div class="modal-overlay" id="stepModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
+      <p id="modalMessage"></p>
+      <button type="button" class="btn btn-next" id="modalContinue">Continue</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
