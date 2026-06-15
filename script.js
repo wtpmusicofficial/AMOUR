@@ -23,21 +23,42 @@ const stepIndicator = document.getElementById('stepIndicator');
 const backBtn = document.getElementById('backBtn');
 const nextBtn = document.getElementById('nextBtn');
 const submitBtn = document.getElementById('submitBtn');
+const navButtons = document.querySelector('.nav-buttons');
 const successScreen = document.getElementById('successScreen');
 const phoneInput = document.getElementById('phone');
 const phoneHint = document.getElementById('phoneHint');
 const nameHint = document.getElementById('nameHint');
-const interestsHint = document.getElementById('interestsHint');
 const instagramInput = document.getElementById('instagram');
 const instagramHint = document.getElementById('instagramHint');
-const stepModal = document.getElementById('stepModal');
-const modalMessage = document.getElementById('modalMessage');
-const modalContinue = document.getElementById('modalContinue');
 const calendarBtn = document.getElementById('calendarBtn');
 const shareBtn = document.getElementById('shareBtn');
 
 let currentStep = 1;
-let pendingModalStep = null;
+
+function updateNavButtons(step) {
+  backBtn.hidden = step === 1;
+  nextBtn.hidden = step !== 7;
+  submitBtn.hidden = step !== TOTAL_STEPS;
+  navButtons.hidden = backBtn.hidden && nextBtn.hidden && submitBtn.hidden;
+}
+
+function syncStepBranching(step) {
+  const location = getSelectedRadio('location')?.value;
+  const age = getSelectedRadio('age')?.value;
+  const houseMusic = getSelectedRadio('houseMusic')?.value;
+  const dancing = getSelectedRadio('dancing')?.value;
+
+  document.getElementById('step1Notice').hidden = step !== 1 || location !== 'No';
+  document.getElementById('step2Notice').hidden = step !== 2 || age !== 'Under 21';
+  document.getElementById('step4Notice').hidden = step !== 4 || houseMusic !== 'No';
+  document.getElementById('step5Notice').hidden = step !== 5 || dancing !== 'No';
+
+  updateNavButtons(step);
+}
+
+function getSelectedRadio(name) {
+  return form.querySelector(`input[name="${name}"]:checked`);
+}
 
 function updateUI() {
   steps.forEach((step) => {
@@ -48,65 +69,6 @@ function updateUI() {
   stepIndicator.textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
 
   syncStepBranching(currentStep);
-}
-
-function syncStepBranching(step) {
-  const location = getSelectedRadio('location')?.value;
-  const age = getSelectedRadio('age')?.value;
-
-  const step1Notice = document.getElementById('step1Notice');
-  const step2Notice = document.getElementById('step2Notice');
-  const step4Notice = document.getElementById('step4Notice');
-
-  if (step === 1) {
-    const showLocationWarning = location === 'No';
-    step1Notice.hidden = !showLocationWarning;
-    backBtn.hidden = currentStep === 1;
-    nextBtn.hidden = showLocationWarning || currentStep === TOTAL_STEPS;
-    submitBtn.hidden = currentStep !== TOTAL_STEPS;
-    return;
-  }
-
-  step1Notice.hidden = true;
-
-  if (step === 2) {
-    const blocked = age === 'Under 21';
-    step2Notice.hidden = !blocked;
-    backBtn.hidden = false;
-    nextBtn.hidden = blocked || currentStep === TOTAL_STEPS;
-    submitBtn.hidden = currentStep !== TOTAL_STEPS;
-    return;
-  }
-
-  step2Notice.hidden = true;
-
-  if (step === 4) {
-    const houseMusic = getSelectedRadio('houseMusic')?.value;
-    const showHouseMusicWarning = houseMusic === 'No';
-    step4Notice.hidden = !showHouseMusicWarning;
-    backBtn.hidden = false;
-    nextBtn.hidden = showHouseMusicWarning || currentStep === TOTAL_STEPS;
-    submitBtn.hidden = currentStep !== TOTAL_STEPS;
-    return;
-  }
-
-  step4Notice.hidden = true;
-
-  if (step === 5) {
-    const dancing = getSelectedRadio('dancing')?.value;
-    backBtn.hidden = false;
-    nextBtn.hidden = dancing === 'No' || currentStep === TOTAL_STEPS;
-    submitBtn.hidden = currentStep !== TOTAL_STEPS;
-    return;
-  }
-
-  backBtn.hidden = currentStep === 1;
-  nextBtn.hidden = currentStep === TOTAL_STEPS;
-  submitBtn.hidden = currentStep !== TOTAL_STEPS;
-}
-
-function getSelectedRadio(name) {
-  return form.querySelector(`input[name="${name}"]:checked`);
 }
 
 function validateStep(step) {
@@ -149,15 +111,12 @@ function validateStep(step) {
       }
       return true;
 
-    case 6: {
-      const checked = form.querySelectorAll('input[name="interests"]:checked');
-      if (checked.length === 0) {
-        interestsHint.textContent = 'Pick at least one';
+    case 6:
+      if (!getSelectedRadio('interests')) {
+        shakeOptions(step);
         return false;
       }
-      interestsHint.textContent = '';
       return true;
-    }
 
     case 7: {
       const handle = normalizeInstagram(instagramInput.value);
@@ -297,9 +256,7 @@ instagramInput.addEventListener('input', () => {
 });
 
 function collectFormData() {
-  const interests = [...form.querySelectorAll('input[name="interests"]:checked')].map(
-    (el) => el.value
-  );
+  const interests = getSelectedRadio('interests').value;
   const phoneResult = validatePhone(phoneInput.value);
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
@@ -310,7 +267,7 @@ function collectFormData() {
     gender: getSelectedRadio('gender').value,
     houseMusic: getSelectedRadio('houseMusic').value,
     dancing: getSelectedRadio('dancing').value,
-    interests: interests.join(', '),
+    interests,
     instagram: normalizeInstagram(instagramInput.value),
     firstName,
     lastName,
@@ -327,20 +284,11 @@ function advanceStep() {
   }
 }
 
-function showModal(message, fromStep) {
-  pendingModalStep = fromStep;
-  modalMessage.textContent = message;
-  stepModal.hidden = false;
-}
-
-function hideModal() {
-  stepModal.hidden = true;
-  pendingModalStep = null;
-}
-
 function handleRadioBranch(step, value) {
   switch (step) {
     case 1:
+    case 4:
+    case 5:
       if (value === 'No') {
         updateUI();
         return;
@@ -357,26 +305,7 @@ function handleRadioBranch(step, value) {
       break;
 
     case 3:
-      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
-      break;
-
-    case 4:
-      if (value === 'No') {
-        updateUI();
-        return;
-      }
-      setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
-      break;
-
-    case 5:
-      if (value === 'No') {
-        showModal(
-          "Fair warning: the run ends in a daytime rave. If dancing isn't your thing, this might not be your event!\n\nCapacity is limited, so are you sure you'd like to take a spot?",
-          5
-        );
-        updateUI();
-        return;
-      }
+    case 6:
       setTimeout(advanceStep, AUTO_ADVANCE_DELAY);
       break;
 
@@ -400,22 +329,7 @@ document.querySelectorAll('.step-continue').forEach((btn) => {
   btn.addEventListener('click', advanceStep);
 });
 
-modalContinue.addEventListener('click', () => {
-  const fromStep = pendingModalStep;
-  hideModal();
-  if (fromStep === currentStep) {
-    advanceStep();
-  }
-});
-
-stepModal.addEventListener('click', (e) => {
-  if (e.target === stepModal) {
-    hideModal();
-  }
-});
-
 backBtn.addEventListener('click', () => {
-  hideModal();
   currentStep--;
   updateUI();
 });
@@ -520,5 +434,4 @@ async function shareSignupLink() {
 calendarBtn.addEventListener('click', downloadCalendarEvent);
 shareBtn.addEventListener('click', shareSignupLink);
 
-hideModal();
 updateUI();

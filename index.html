@@ -112,6 +112,11 @@
               <span>No</span>
             </label>
           </div>
+          <div class="step-notice" id="step5Notice" hidden>
+            <p>Fair warning: the run ends in a daytime rave. If dancing isn't your thing, this might not be your event!</p>
+            <p>Capacity is limited, so are you sure you'd like to take a spot?</p>
+            <button type="button" class="btn btn-next step-continue">Continue</button>
+          </div>
         </fieldset>
 
         <!-- Step 6 -->
@@ -119,23 +124,22 @@
           <legend>What are you most interested in?</legend>
           <div class="options options-grid">
             <label class="option">
-              <input type="checkbox" name="interests" value="Running">
+              <input type="radio" name="interests" value="Running" required>
               <span>Running</span>
             </label>
             <label class="option">
-              <input type="checkbox" name="interests" value="Raving">
+              <input type="radio" name="interests" value="Raving">
               <span>Raving</span>
             </label>
             <label class="option">
-              <input type="checkbox" name="interests" value="Meeting new people">
+              <input type="radio" name="interests" value="Meeting new people">
               <span>Meeting new people</span>
             </label>
             <label class="option">
-              <input type="checkbox" name="interests" value="Cannabis">
+              <input type="radio" name="interests" value="Cannabis">
               <span>Cannabis</span>
             </label>
           </div>
-          <p class="field-hint" id="interestsHint"></p>
         </fieldset>
 
         <!-- Step 7 -->
@@ -197,13 +201,6 @@
         </ol>
       </div>
     </main>
-  </div>
-
-  <div class="modal-overlay" id="stepModal" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
-      <p id="modalMessage"></p>
-      <button type="button" class="btn btn-next" id="modalContinue">Continue</button>
-    </div>
   </div>
 
   <script src="script.js"></script>
