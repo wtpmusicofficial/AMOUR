@@ -1,3 +1,7 @@
 name = "amour"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "."
+
+[vars]
+AIRTABLE_BASE_ID = "appKxMIaIyWSZ90kO"
+AIRTABLE_TABLE_NAME = "tbl7lFjdGMzeMWF9k"

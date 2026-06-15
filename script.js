@@ -350,8 +350,16 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify(data),
     });
 
+    const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      throw new Error('Submission failed');
+      const message =
+        result.detail ||
+        (result.missing
+          ? `Server missing config: ${result.missing.join(', ')}`
+          : result.error) ||
+        'Submission failed';
+      throw new Error(message);
     }
 
     form.hidden = true;
@@ -360,8 +368,8 @@ form.addEventListener('submit', async (e) => {
     header.hidden = true;
     page.classList.add('page--success');
     successScreen.hidden = false;
-  } catch {
-    phoneHint.textContent = 'Something went wrong. Please try again.';
+  } catch (err) {
+    phoneHint.textContent = err.message || 'Something went wrong. Please try again.';
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit';
   }

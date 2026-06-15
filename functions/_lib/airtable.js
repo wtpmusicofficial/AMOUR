@@ -1,7 +1,8 @@
 export class AirtableConfigError extends Error {
-  constructor(message) {
+  constructor(message, missing = []) {
     super(message);
     this.name = 'AirtableConfigError';
+    this.missing = missing;
   }
 }
 
@@ -12,18 +13,30 @@ export class AirtableValidationError extends Error {
   }
 }
 
-export function getAirtableConfig(env) {
-  const apiKey = env.AIRTABLE_API_KEY;
-  const baseId = env.AIRTABLE_BASE_ID;
-  const tableName = env.AIRTABLE_TABLE_NAME;
+export class AirtableApiError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'AirtableApiError';
+  }
+}
 
-  if (!apiKey || !baseId || !tableName) {
+const ENV_KEYS = ['AIRTABLE_API_KEY', 'AIRTABLE_BASE_ID', 'AIRTABLE_TABLE_NAME'];
+
+export function getAirtableConfig(env = {}) {
+  const missing = ENV_KEYS.filter((key) => !env[key]);
+
+  if (missing.length > 0) {
     throw new AirtableConfigError(
-      'Missing AIRTABLE_API_KEY, AIRTABLE_BASE_ID, or AIRTABLE_TABLE_NAME'
+      `Missing environment variables: ${missing.join(', ')}`,
+      missing
     );
   }
 
-  return { apiKey, baseId, tableName };
+  return {
+    apiKey: env.AIRTABLE_API_KEY,
+    baseId: env.AIRTABLE_BASE_ID,
+    tableName: env.AIRTABLE_TABLE_NAME,
+  };
 }
 
 export function mapSubmissionToFields(data) {
@@ -91,7 +104,7 @@ export async function createAirtableRecord(config, fields) {
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`Airtable API error (${response.status}): ${detail}`);
+    throw new AirtableApiError(`Airtable API error (${response.status}): ${detail}`);
   }
 
   const payload = await response.json();
