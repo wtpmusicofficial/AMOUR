@@ -56,6 +56,7 @@ function syncStepBranching(step) {
 
   const step1Notice = document.getElementById('step1Notice');
   const step2Notice = document.getElementById('step2Notice');
+  const step4Notice = document.getElementById('step4Notice');
 
   if (step === 1) {
     const showLocationWarning = location === 'No';
@@ -81,11 +82,15 @@ function syncStepBranching(step) {
 
   if (step === 4) {
     const houseMusic = getSelectedRadio('houseMusic')?.value;
+    const showHouseMusicWarning = houseMusic === 'No';
+    step4Notice.hidden = !showHouseMusicWarning;
     backBtn.hidden = false;
-    nextBtn.hidden = houseMusic === 'No' || currentStep === TOTAL_STEPS;
+    nextBtn.hidden = showHouseMusicWarning || currentStep === TOTAL_STEPS;
     submitBtn.hidden = currentStep !== TOTAL_STEPS;
     return;
   }
+
+  step4Notice.hidden = true;
 
   if (step === 5) {
     const dancing = getSelectedRadio('dancing')?.value;
@@ -357,10 +362,6 @@ function handleRadioBranch(step, value) {
 
     case 4:
       if (value === 'No') {
-        showModal(
-          "It's a rave so that's what we'll be playing! Are you sure you want to continue?",
-          4
-        );
         updateUI();
         return;
       }
