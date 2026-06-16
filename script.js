@@ -12,7 +12,7 @@ const EVENT_CONFIG = {
 };
 
 const SHARE_MESSAGE =
-  "I just signed up for the AMOUR event — a run that ends in a daytime rave! Sign up here:";
+  "I just signed up for a daytime run and rave in West Hollywood on June 28th. Here's the link!";
 
 const form = document.getElementById('signupForm');
 const page = document.querySelector('.page');
