@@ -14,6 +14,12 @@ const EVENT_CONFIG = {
 const SHARE_MESSAGE =
   "I just signed up for a daytime run and rave in West Hollywood on June 28th. Here's the link!";
 
+function trackCompleteRegistration() {
+  if (typeof fbq === 'function') {
+    fbq('track', 'CompleteRegistration');
+  }
+}
+
 const form = document.getElementById('signupForm');
 const page = document.querySelector('.page');
 const header = document.querySelector('.header');
@@ -361,6 +367,8 @@ form.addEventListener('submit', async (e) => {
         'Submission failed';
       throw new Error(message);
     }
+
+    trackCompleteRegistration();
 
     form.hidden = true;
     document.querySelector('.progress-bar').hidden = true;
